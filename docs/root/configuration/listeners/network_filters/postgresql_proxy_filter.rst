@@ -3,17 +3,30 @@
 PostgreSQL proxy
 ================
 
-The PostgreSQL proxy filter decodes the wire protocol between PostgreSQL client
-and server. The decoded info is currently used only to produce statistics.
+The PostgreSQL proxy filter decodes the wire protocol between a PostgreSQL client (downstream) and a PostgreSQL server
+(upstream). The decoded information is currently used only to produce PostgreSQL level statistics like sesions,
+statements or transactions executed, among others. This current version does not decode SQL queries. Future versions may
+add more statistics and more advanced capabilities.
 
-When the PostgreSQL filter detects that a session is encrypted, the messages
-are ignored and no decoding takes place.
+When the PostgreSQL filter detects that a session is encrypted (SSL), the messages are ignored and no decoding takes
+place.
 
 
 .. attention::
 
    The `postgresql_proxy` filter is experimental and is currently under active development.
    Capabilities will be expanded over time and the configuration structures are likely to change.
+
+
+.. warning::
+
+   The `postgreql_proxy` filter was tested only with
+   `PostgreSQL frontend/backend protocol version 3.0`_, which was introduced in
+   PostgreSQL 7.4. Earlier versions are thus not supported. Testing is limited
+   anyway to not EOL-ed versions.
+
+.. _PostgreSQL frontend/backend protocol version 3.0: https://www.postgresql.org/docs/current/protocol.html
+
 
 Configuration
 -------------
@@ -39,6 +52,7 @@ example below:
 
 .. _config_network_filters_postgresql_proxy_stats:
 
+
 Statistics
 ----------
 
@@ -46,22 +60,23 @@ Every configured PostgreSQL proxy filter has statistics rooted at postgresql.<st
 
 .. csv-table::
   :header: Name, Type, Description
-  :widths: 1, 1, 2
+  :widths: 2, 1, 3
 
-  backend_msgs, Counter, Number of backend messages detected by the filter
-  errors, Counter, Number of times the server replied with error
-  frontend_msgs, Counter, Number of frontend messages detected by the filter
-  sessions, Counter, Number of successful logins
-  sessions_encrypted, Counter, Number of times the proxy detected encrypted sessions
-  sessions_unencrypted, Counter, Number of messages indicating unencrypted successful login
-  statements, Counter, Number of SQL statements
+  messages_backend, Counter, Total number of backend messages detected by the filter
+  messages_backend_error, Counter, Number of times the server replied with error
+  messages_backend_ok, Counter, Number of times the server replied OK
+  messages_backend_unknown, Counter, Number of times the proxy successfully decoded a message but did not know what to do with it
+  messages_backend_warning, Counter, Number of time the server replied with warning
+  messages_frontend, Counter, Number of frontend messages detected by the filter
+  sessions, Counter, Total number of successful logins
+  sessions_ssl, Counter, Number of times the proxy detected encrypted (SSL) sessions
+  sessions_nossl, Counter, Number of messages indicating unencrypted (no SSL) successful login
+  statements, Counter, Total number of SQL statements
   statements_delete, Counter, Number of DELETE statements
   statements_insert, Counter, Number of INSERT statements
   statements_select, Counter, Number of SELECT statements
   statements_update, Counter, Number of UPDATE statements
   statements_other, Counter, "Number of statements other than DELETE, INSERT, SELECT or UPDATE"
-  transactions, Counter, Number of SQL transactions
+  transactions, Counter, Total number of SQL transactions
   transactions_commit, Counter, Number of COMMIT transactions
   transactions_rollback, Counter, Number of ROLLBACK transactions
-  warnings, Counter, Number of time the server replied with warning
-  unknown, Counter, Number of times the proxy successfully decoded a message but did not know what to do with it
