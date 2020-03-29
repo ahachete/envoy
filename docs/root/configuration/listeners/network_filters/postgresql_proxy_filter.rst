@@ -4,12 +4,10 @@ PostgreSQL proxy
 ================
 
 The PostgreSQL proxy filter decodes the wire protocol between a PostgreSQL client (downstream) and a PostgreSQL server
-(upstream). The decoded information is currently used only to produce PostgreSQL level statistics like sesions,
-statements or transactions executed, among others. This current version does not decode SQL queries. Future versions may
-add more statistics and more advanced capabilities.
+(upstream). More information:
 
-When the PostgreSQL filter detects that a session is encrypted (SSL), the messages are ignored and no decoding takes
-place.
+* PostgreSQL :ref:`architecture overview <arch_overview_postgresql>`
+* :ref:`v2 API reference <envoy_api_field_listener.Filter.name>`
 
 
 .. attention::
@@ -47,10 +45,6 @@ example below:
           "@type": type.googleapis.com/envoy.config.filter.network.tcp_proxy.v2.TcpProxy
           stat_prefix: tcp
           cluster: postgresql_cluster
-
-* :ref:`v2 API reference <envoy_api_field_listener.Filter.name>`
-
-.. _config_network_filters_postgresql_proxy_stats:
 
 
 Statistics
